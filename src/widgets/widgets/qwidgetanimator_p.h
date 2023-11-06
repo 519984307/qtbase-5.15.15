@@ -1,0 +1,91 @@
+/****************************************************************************
+**
+** Copyright (C) 2021 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the QtWidgets module of the Qt Toolkit.
+**
+** $QT_BEGIN_LICENSE:COMM$
+**
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** $QT_END_LICENSE$
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+****************************************************************************/
+
+#ifndef QWIDGET_ANIMATOR_P_H
+#define QWIDGET_ANIMATOR_P_H
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API. It exists purely as an
+// implementation detail. This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
+
+#include <QtWidgets/private/qtwidgetsglobal_p.h>
+#include <qobject.h>
+#include <qhash.h>
+#include <qpointer.h>
+
+QT_BEGIN_NAMESPACE
+
+class QWidget;
+class QMainWindowLayout;
+class QPropertyAnimation;
+class QRect;
+
+class QWidgetAnimator : public QObject
+{
+    Q_OBJECT
+public:
+    QWidgetAnimator(QMainWindowLayout *layout);
+    void animate(QWidget *widget, const QRect &final_geometry, bool animate);
+    bool animating() const;
+
+    void abort(QWidget *widget);
+
+#if QT_CONFIG(animation)
+private Q_SLOTS:
+    void animationFinished();
+#endif
+
+private:
+    typedef QHash<QWidget*, QPointer<QPropertyAnimation> > AnimationMap;
+    AnimationMap m_animation_map;
+#if QT_CONFIG(mainwindow)
+    QMainWindowLayout *m_mainWindowLayout;
+#endif
+};
+
+QT_END_NAMESPACE
+
+#endif // QWIDGET_ANIMATOR_P_H
